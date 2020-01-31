@@ -1,0 +1,34 @@
+#!/bin/bash
+
+usage() {
+  echo "$(basename ${0}) <pattern> [folder]"
+  echo
+  echo 'Find in Pom'
+}
+
+if [ "${1}" = '-h' ]; then
+  usage
+  exit 0
+fi
+
+readonly PATTERN=${1}
+readonly FOLDER=${2:-$(pwd)}
+
+if [ -z "${PATTERN}" ]; then
+  echo "Search pattern is missing."
+  usage
+  exit 1
+fi
+
+poms=$(find ${FOLDER} -name 'pom.xml')
+
+for pom in ${poms}
+do
+  tmp_output=$(mktemp)
+  grep -e "${PATTERN}" "${pom}" > "${tmp_output}"
+  if [ "${?}" -eq 0 ]; then
+    echo "${pom}:"  
+    cat "${tmp_output}"
+  fi
+  rm "${tmp_output}"
+done

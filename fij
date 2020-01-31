@@ -1,0 +1,20 @@
+#!/bin/sh
+
+readonly CLASSNAME=$(echo "${1}" | sed -e 's;\.;/;g')
+readonly REPO=${2:-"${HOME}/.m2/repository"}
+
+if [ -z ${CLASSNAME} ] ; then
+    echo "Missing classname..."
+    exit 1
+fi
+
+
+
+for jarfile in $(find ${REPO} -name "*.jar")
+do
+    unzip -t ${jarfile} | grep ${CLASSNAME}
+    if [ ${?} -eq 0 ]; then
+        echo ${jarfile}
+    fi
+done
+
